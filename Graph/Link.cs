@@ -9,7 +9,7 @@ namespace SimpleGraph
     /// Связь элементов
     /// </summary>
     /// <typeparam name="T">Тип элементов для которых устанавливается связь</typeparam>
-    class Link<T> : IEquatable<Link<T>>
+    public class Link<T> : IEquatable<Link<T>>
     {
         /// <summary>
         /// Родительский элемент связи

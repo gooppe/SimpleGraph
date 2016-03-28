@@ -11,7 +11,7 @@ namespace SimpleGraph
     /// Граф
     /// </summary>
     /// <typeparam name="T">Тип элементов графа</typeparam>
-    class Graph<T>
+    public class Graph<T>
     {   
         /// <summary>
         /// Все узлы графа
