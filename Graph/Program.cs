@@ -33,26 +33,27 @@ namespace SimpleGraph
 
             List<Test> nodes = new List<Test>(new Test[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11 });
 
-            bool[,] edges = new bool[11, 11]
-            {
-                { false, false, false, false, false, false, true, false, false, false, false },
-                { true, true, false, false, false, false, false, true, false, false, true },
-                { false, false, true, true, false, false, false, false, true, true, false },
-                { false, false, false, true, true, false, false, false, false, false, false },
-                { false, false, false, true, false, false, false, false, false, false, false },
-                { false, false, false, false, false, true, false, true, false, false, false },
-                { false, false, false, false, false, false, false, false, false, false, true },
-                { false, false, false, false, false, false, false, false, false, false, false },
-                { false, false, true, false, false, false, false, false, false, false, false },
-                { false, false, false, true, true, false, false, false, true, false, false },
-                { true, false, false, false, true, true, false, false, false, false, true }
-            };
 
+             bool[,] edges = new bool[11, 11]
+             {
+                 { false, false, false, false, false, false, true, false, false, false, false },
+                 { true, true, false, false, false, false, false, true, false, false, true },
+                 { false, false, true, true, false, false, false, false, true, true, false },
+                 { false, false, false, true, true, false, false, false, false, false, false },
+                 { false, false, false, true, false, false, false, false, false, false, false },
+                 { false, false, false, false, false, true, false, true, false, false, false },
+                 { false, false, false, false, false, false, false, false, false, false, true },
+                 { false, false, false, false, false, false, false, false, false, false, false },
+                 { false, false, true, false, false, false, false, false, false, false, false },
+                 { false, false, false, true, true, false, false, false, true, false, false },
+                 { true, false, false, false, true, true, false, false, false, false, true }
+             };
+            
             Graph<Test> graph = new Graph<Test>(nodes, new List<Link<Test>>());
             graph.SetEdges(edges);
             PrintMatrix(graph.GetAdjacenyMatrix());
             PrintPartion(graph.MalgrangePartion());
-            Console.ReadKey();  
+            Console.ReadKey();
         }
 
         static void PrintClosure(List<Test> el)

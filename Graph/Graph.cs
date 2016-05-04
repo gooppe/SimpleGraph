@@ -4,81 +4,126 @@ using System.Linq;
 
 namespace SimpleGraph
 {
-    //CREATED BY ANDREY SOKOLOV
+    //CREATED BY DREAMTEAM
     //DATE: 15.03.2016
     
     /// <summary>
-    /// Граф
+    /// Simple representation of graph
     /// </summary>
-    /// <typeparam name="T">Тип элементов графа</typeparam>
+    /// <typeparam name="T">Item type</typeparam>
     public class Graph<T>
     {   
         /// <summary>
-        /// Все узлы графа
+        /// All nodes of graph
         /// </summary>
         public readonly List<T> Nodes;
         /// <summary>
-        /// Все связи графа
+        /// All edges of graph
         /// </summary>
         public readonly List<Link<T>> Edges;
 
         /// <summary>
-        /// Создать новый граф
+        /// Default constructor
         /// </summary>
-        /// <param name="Edges">Описание связей</param>
+        public Graph()
+        {
+            Nodes = new List<T>();
+            Edges = new List<Link<T>>();
+        }
+
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        /// <param name="Nodes">List with graph's items</param>
+        /// <param name="Edges">List with graph's edges</param>
         public Graph(List<T> Nodes, List<Link<T>> Edges)
         {
+            //Check our arguments for NULL
             if (Nodes == null || Edges == null)
                 throw new ArgumentNullException();
 
             this.Nodes = new List<T>();
+            //Insert our nodes and remove duplicate
             this.Nodes.AddRange(Nodes.Distinct().ToList());
 
             this.Edges = new List<Link<T>>(Edges);
-
-            // Удаляем связи для которых не существует вершин
+            // Remove all edges wich don't have their own nodes.
             this.Edges.RemoveAll(e => !this.Nodes.Contains(e.Child) || !this.Nodes.Contains(e.Parent));
+            //Also, remove duplicate
             this.Edges = this.Edges.Distinct().ToList();
         }
 
         /// <summary>
-        /// Сгенерировать матрицу смежности
+        /// Generate adjaceny matrix
         /// </summary>
         public bool[,] GetAdjacenyMatrix()
         {
-            bool[,] AdjacentMatrix = new bool[Nodes.Count, Nodes.Count]; 
+            bool[,] AdjacentMatrix = new bool[Nodes.Count, Nodes.Count];
+            //Fill matrix for each link
             foreach (Link<T> link in Edges)
             {
                 AdjacentMatrix[Nodes.IndexOf(link.Parent), Nodes.IndexOf(link.Child)] = true;
             }
             return AdjacentMatrix;
         }
+
+        /// <summary>
+        /// Add the node
+        /// </summary>
+        /// <param name="node">Node</param>
+        public void AddNode(T node)
+        {
+            if (node == null)
+                throw new ArgumentNullException("node");
+            Nodes.Add(node);
+            Nodes.Distinct();
+        }
         
         /// <summary>
-        /// Удалить указанную вершину
+        /// Remove required node
         /// </summary>
-        /// <param name="node"></param>
+        /// <param name="node">Graph node</param>
         public void RemoveNode(T node)
         {
+            //Remove node
             Nodes.Remove(node);
+            //Remve all links for qurrent node
             Edges.RemoveAll(s => (s.Child.Equals(node) || s.Parent.Equals(node)));
         }
 
         /// <summary>
-        /// Удалить ребро
+        /// Add the edge
         /// </summary>
-        /// <param name="edge">Удаляемое ребро</param>
+        /// <param name="edge">Edge</param>
+        public void AddEdge(Link<T> edge)
+        {
+            if (edge == null)
+                throw new ArgumentNullException("edge");
+            if (Nodes.Contains(edge.Parent) && Nodes.Contains(edge.Child))
+            {
+                Edges.Add(edge);
+                Edges.Distinct();
+            }
+        }
+
+        /// <summary>
+        /// Remove reuired edge
+        /// </summary>
+        /// <param name="edge">Required edge</param>
         public void RemoveEdge(Link<T> edge)
         {
+            //It's simple. Isn't it?
             Edges.Remove(edge);
         }
 
         /// <summary>
-        /// Изменить связи в графе
+        /// Apply relations for our graph
         /// </summary>
-        /// <param name="AdjacenyMatrix">Матрица смежности связей в графе</param>
+        /// <param name="AdjacenyMatrix">Adjacent matrix with links for graph.
+        /// Size have to be [n, n], where { n } is count of elements in graph.</param>
         public void SetEdges(bool[,] AdjacenyMatrix)
         {
+            //Check matrix is correct
             if (AdjacenyMatrix == null)
                 throw new ArgumentNullException("AdjacentMatrix");
             if (AdjacenyMatrix.GetLength(0) != AdjacenyMatrix.GetLength(1))
@@ -86,8 +131,10 @@ namespace SimpleGraph
             if (AdjacenyMatrix.GetLength(0) > Nodes.Count)
                 throw new ArgumentException("The number of connecting vertices exceeds the number of vertices", "AdjacentMatrix");
 
+            //Clear last set of edges...
             Edges.Clear();
 
+            // ...and generate new links!
             for (int i = 0; i < AdjacenyMatrix.GetLength(0); i++)
             {
                 for (int j = 0; j < AdjacenyMatrix.GetLength(1); j++)
@@ -102,11 +149,11 @@ namespace SimpleGraph
         }
             
         /// <summary>
-        /// Произвести слияние графов
+        /// Union graph
         /// </summary>
-        /// <param name="first">Исходный граф</param>
-        /// <param name="second">Исходный граф</param>
-        /// <returns>Граф слияния</returns>
+        /// <param name="first">Original graph</param>
+        /// <param name="second">Original graph</param>
+        /// <returns>United graph</returns>
         public static Graph<T> Union(Graph<T> first, Graph<T> second)
         {
             if (first == null || second == null)
@@ -122,11 +169,11 @@ namespace SimpleGraph
         }
 
         /// <summary>
-        /// Произвести пересечение графов 
+        /// Find graph's intersection
         /// </summary>
-        /// <param name="first">Исходный граф</param>
-        /// <param name="second">Исхожный граф</param>
-        /// <returns>Граф пересечения</returns>
+        /// <param name="first">Original graph</param>
+        /// <param name="second">Original graph</param>
+        /// <returns>Intersection of graphs</returns>
         public static Graph<T> Intersection(Graph<T> first, Graph<T> second)
         {
             if (first == null || second == null)
@@ -134,16 +181,16 @@ namespace SimpleGraph
 
             List<T> Nodes = new List<T>(first.Nodes);
             Nodes.AddRange(second.Nodes);
-
+            
             return new Graph<T>(Nodes, first.Edges.Intersect(second.Edges).ToList());
         }
 
         /// <summary>
-        /// Разность графов
+        /// Graph difference
         /// </summary>
-        /// <param name="first">Граф</param>
-        /// <param name="second">Граф</param>
-        /// <returns>Граф, основанный на разности множеств вершин вычитаемых графов</returns>
+        /// <param name="first">Graph</param>
+        /// <param name="second">Graph</param>
+        /// <returns>Graph, based on difference bunches of nodes deducted graphs</returns>
         public static Graph<T> Difference(Graph<T> first, Graph<T> second)
         {
             if (first == null || second == null)
@@ -159,11 +206,11 @@ namespace SimpleGraph
         }
 
         /// <summary>
-        /// Кольцевая сумма графов
+        /// Ring sum of graphs
         /// </summary>
-        /// <param name="first">Исходный граф</param>
-        /// <param name="second">Исходный граф</param>
-        /// <returns>Сумма графов</returns>
+        /// <param name="first">First graph</param>
+        /// <param name="second">Second graph</param>
+        /// <returns>Sum of graphs</returns>
         public static Graph<T> RingSum(Graph<T> first, Graph<T> second)
         {
             List<Link<T>> firstEdges = new List<Link<T>>(first.Edges);
@@ -181,10 +228,10 @@ namespace SimpleGraph
         }
         
         /// <summary>
-        /// Пересечение двух наборов вершин
+        /// Intersection of two sets
         /// </summary>
-        /// <param name="a">Набор вершин</param>
-        /// <param name="b">Набор вершин</param>
+        /// <param name="a">First set</param>
+        /// <param name="b">Second set</param>
         /// <returns></returns>
         public static List<T> Intersection(List<T> a, List<T> b)
         {
@@ -195,10 +242,10 @@ namespace SimpleGraph
         }
 
         /// <summary>
-        /// Прямое отображение
+        /// Direct mapping
         /// </summary>
-        /// <param name="node">Исходный элемент графа</param>
-        /// <returns>Набор вершин графа, являющийся прямым отображением</returns>
+        /// <param name="node">Base graph element</param>
+        /// <returns>Node graph set, that is dirrect map</returns>
         public List<T> DirectMapping(T node)
         {
             List<Link<T>> edges = Edges.FindAll(e => e.Parent.Equals(node));
@@ -212,10 +259,10 @@ namespace SimpleGraph
         }
 
         /// <summary>
-        /// Прямое отображение
+        /// Direct mapping
         /// </summary>
-        /// <param name="nodes">Исходные элементы графа</param>
-        /// <returns>Набор вершин графа, являющийся прямым отображением</returns>
+        /// <param name="nodes">Base graph elements</param>
+        /// <returns>Node graph set, that is dirrect map</returns>
         public List<T> DirectMapping(List<T> nodes)
         {
             List<T> result = new List<T>();
@@ -227,10 +274,10 @@ namespace SimpleGraph
         }
 
         /// <summary>
-        /// Обратное отображение
+        /// Inverse mapping
         /// </summary>
-        /// <param name="node">Исходный элемент графа</param>
-        /// <returns>Набор вершин графа, являющийся обратным отображением</returns>
+        /// <param name="node">Base graph element</param>
+        /// <returns>Node graph set, that is inverse map</returns>
         public List<T> InverseMapping(T node)
         {
             List<Link<T>> edges = Edges.FindAll(e => e.Child.Equals(node));
@@ -243,10 +290,10 @@ namespace SimpleGraph
         }
 
         /// <summary>
-        /// Обратное отображение
+        /// Inverse mapping
         /// </summary>
-        /// <param name="nodes">Исходные элементы графа</param>
-        /// <returns>Набор вершин графа, являющийся обратным отображением</returns>
+        /// <param name="nodes">Base graph elements</param>
+        /// <returns>Node graph set, that is inverse map</returns>
         public List<T> InverseMapping(List<T> nodes)
         {
             List<T> result = new List<T>();
@@ -258,10 +305,10 @@ namespace SimpleGraph
         }
 
         /// <summary>
-        /// Прямое транзитивное замыкание
+        /// Direct transitive closure
         /// </summary>
-        /// <param name="node">Вершина замыкания</param>
-        /// <returns>Набор вершин прямого транзитивного замыкания</returns>
+        /// <param name="node">Closure node</param>
+        /// <returns>Set of transitive closure's nodes</returns>
         public List<T> DirectTransitiveClosure(T node)
         {
             int lastSize = 0;
@@ -277,10 +324,10 @@ namespace SimpleGraph
         }
 
         /// <summary>
-        /// Обратное транзитивное замыкание
+        /// Inverse transitive closure
         /// </summary>
-        /// <param name="node">Вершина замыкания</param>
-        /// <returns>Набор вершин обратного транзитивного замыкания</returns>
+        /// <param name="node">Closure node</param>
+        /// <returns>Set of transitive closure's nodes</returns>
         public List<T> InverseTransitiveClosure(T node)
         {
             int lastSize = 0;
@@ -296,9 +343,9 @@ namespace SimpleGraph
         }
 
         /// <summary>
-        /// Получить матрицу достижимости графа
+        /// Calculate attainbility matrix
         /// </summary>
-        /// <returns>Матрица достижимости</returns>
+        /// <returns>Attainbility matrix</returns>
         public bool[,] GetAttainbilityMatrix()
         {
             bool[,] mat = new bool[Nodes.Count, Nodes.Count];
@@ -314,9 +361,9 @@ namespace SimpleGraph
         }
 
         /// <summary>
-        /// Получить матрицу контрдостижимости графа
+        /// Calculate inaccessibility matrix
         /// </summary>
-        /// <returns>Матрица контрдостижимости</returns>
+        /// <returns>Inaccessibility matrix</returns>
         public bool[,] GetInaccessibilityMatrix()
         {
             bool[,] mat = new bool[Nodes.Count, Nodes.Count];
@@ -332,12 +379,12 @@ namespace SimpleGraph
         }
 
         /// <summary>
-        /// Разбить граф на сильносвязанные подграфы
+        /// Split graph to highly connected subgraphs
         /// </summary>
-        /// <returns>Разбитый граф</returns>
+        /// <returns>Splited graph</returns>
         public Graph<Graph<T>> MalgrangePartion()
         {
-            //Разбиваем на сильносвязанные подграфы
+            //Split graph
             List<Graph<T>> subGraphs = new List<Graph<T>>();
             Graph<T> procGraph = this;
             while(procGraph.Nodes.Count != 0)
@@ -351,7 +398,7 @@ namespace SimpleGraph
                 procGraph = Difference(procGraph, strongSubgraph);
             }
 
-            //Генерируем связи для конденсаций
+            //Claculate condensations
             List<Link<Graph<T>>> edges = new List<Link<Graph<T>>>();
             foreach(Graph<T> graphPar in subGraphs)
             {
