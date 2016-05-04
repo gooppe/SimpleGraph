@@ -1,0 +1,44 @@
+﻿<Window x:Class="SimpleGraphRepresentation.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SimpleGraphRepresentation"
+        mc:Ignorable="d"
+        Title="SimpleGraph" Height="350" Width="525" WindowState="Maximized">
+    <Window.Resources>
+        <Style x:Key="myButton" TargetType="{x:Type Button}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <ContentControl>
+                            <Grid>
+                                <Border Name="PressedBorder" BorderBrush="Gray" BorderThickness="1,1,2,2">
+                                    <ContentPresenter/>
+                                </Border>
+                                <Border Name="NormalBorder" BorderBrush="Black"  BorderThickness="2"/>
+                            </Grid>
+                        </ContentControl>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Button.IsPressed" Value="True" >
+                                <Setter TargetName="NormalBorder" Property="BorderBrush" Value="Transparent" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Button x:Name="SimButton" Content="Simulate" Margin="0,0,96,10" Click="SimButton_Click" HorizontalAlignment="Right" Width="81" Height="21" VerticalAlignment="Bottom" IsEnabled="False"/>
+        <Button x:Name="SepButton" Content="Separate" Margin="0,0,182,10" Click="SepButton_Click" HorizontalAlignment="Right" Width="81" Height="21" VerticalAlignment="Bottom" IsEnabled="False"/>
+        <Button x:Name="AddButton" Content="Add nodes" Margin="0,0,10,10" Click="AddButton_Click" HorizontalAlignment="Right" Width="81" Height="21" VerticalAlignment="Bottom"/>
+        <Canvas x:Name="DrawSurface" Margin="0,45,0,36" MouseLeftButtonDown="DrawSurface_MouseLeftButtonDown">
+            <Canvas.Background>
+                <SolidColorBrush Color="White" Opacity="0"/>
+            </Canvas.Background>
+        </Canvas>
+        <Label x:Name="label" Content="Add some nodes, make connections, simulate and enjoy!" Margin="10,10,10,0" VerticalAlignment="Top" FontFamily="Segoe UI Light" FontSize="14"/>
+    </Grid>
+</Window>
