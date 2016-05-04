@@ -59,7 +59,7 @@ namespace SimpleGraph
         public bool[,] GetAdjacenyMatrix()
         {
             bool[,] AdjacentMatrix = new bool[Nodes.Count, Nodes.Count];
-            //Fill matrix for each link
+            //Fill matrix for each edge
             foreach (Link<T> link in Edges)
             {
                 AdjacentMatrix[Nodes.IndexOf(link.Parent), Nodes.IndexOf(link.Child)] = true;
@@ -76,6 +76,7 @@ namespace SimpleGraph
             if (node == null)
                 throw new ArgumentNullException("node");
             Nodes.Add(node);
+            //Remove duplicate
             Nodes.Distinct();
         }
         
@@ -99,9 +100,11 @@ namespace SimpleGraph
         {
             if (edge == null)
                 throw new ArgumentNullException("edge");
+            //Check exists parent and children node
             if (Nodes.Contains(edge.Parent) && Nodes.Contains(edge.Child))
             {
                 Edges.Add(edge);
+                //Remove duplicate
                 Edges.Distinct();
             }
         }
@@ -159,12 +162,15 @@ namespace SimpleGraph
             if (first == null || second == null)
                 throw new ArgumentNullException();
 
+            //Union edges
             List<Link<T>> links = new List<Link<T>>(first.Edges);
             links.AddRange(second.Edges);
 
+            //And union nodes
             List<T> Nodes = new List<T>(first.Nodes);
             Nodes.AddRange(second.Nodes);
 
+            //As result, we have united graph
             return new Graph<T>(Nodes, links);
         }
 
@@ -178,11 +184,9 @@ namespace SimpleGraph
         {
             if (first == null || second == null)
                 throw new ArgumentNullException();
-
-            List<T> Nodes = new List<T>(first.Nodes);
-            Nodes.AddRange(second.Nodes);
             
-            return new Graph<T>(Nodes, first.Edges.Intersect(second.Edges).ToList());
+            //Intersect nodes and edges and return new graph
+            return new Graph<T>(first.Nodes.Intersect(second.Nodes).ToList(), first.Edges.Intersect(second.Edges).ToList());
         }
 
         /// <summary>
@@ -197,11 +201,12 @@ namespace SimpleGraph
                 throw new ArgumentNullException();
 
             List<T> nodes = new List<T>(first.Nodes);
+            //Remove all nodes from first graph that contained in the second graph
             nodes.RemoveAll(s => second.Nodes.Contains(s));
 
             List<Link<T>> edges = new List<Link<T>>(first.Edges);
-            edges.AddRange(second.Edges);
 
+            //Return result graph
             return new Graph<T>(nodes, edges);
         }
 
@@ -216,6 +221,7 @@ namespace SimpleGraph
             List<Link<T>> firstEdges = new List<Link<T>>(first.Edges);
             List<Link<T>> secondEdges = new List<Link<T>>(second.Edges);
 
+            //Remove equal edges from each graph
             firstEdges.RemoveAll(s => second.Edges.Contains(s));
             secondEdges.RemoveAll(s => first.Edges.Contains(s));
 
@@ -223,7 +229,7 @@ namespace SimpleGraph
             edges.AddRange(secondEdges);
             List<T> nodes = new List<T>(first.Nodes);
             nodes.AddRange(second.Nodes);
-
+            //Return new graph
             return new Graph<T>(nodes, edges);
         }
         
@@ -238,6 +244,7 @@ namespace SimpleGraph
             if (a == null || b == null)
                 throw new ArgumentNullException();
 
+            //The intersection of two sets
             return a.Intersect(b).ToList();
         }
 
@@ -248,6 +255,7 @@ namespace SimpleGraph
         /// <returns>Node graph set, that is dirrect map</returns>
         public List<T> DirectMapping(T node)
         {
+            //Find all nodes, that are children for specified node
             List<Link<T>> edges = Edges.FindAll(e => e.Parent.Equals(node));
             List<T> result = new List<T>();
             foreach(Link<T> edge in edges)
@@ -265,6 +273,7 @@ namespace SimpleGraph
         /// <returns>Node graph set, that is dirrect map</returns>
         public List<T> DirectMapping(List<T> nodes)
         {
+            //Find all nodes that are childrens for each specified node
             List<T> result = new List<T>();
             foreach(T node in nodes)
             {
@@ -280,6 +289,7 @@ namespace SimpleGraph
         /// <returns>Node graph set, that is inverse map</returns>
         public List<T> InverseMapping(T node)
         {
+            //Find all nodes, that are parents for specified node
             List<Link<T>> edges = Edges.FindAll(e => e.Child.Equals(node));
             List<T> result = new List<T>();
             foreach (Link<T> edge in edges)
@@ -296,6 +306,7 @@ namespace SimpleGraph
         /// <returns>Node graph set, that is inverse map</returns>
         public List<T> InverseMapping(List<T> nodes)
         {
+            //Find all nodes, that are parent for each specified nodes
             List<T> result = new List<T>();
             foreach (T node in nodes)
             {
@@ -316,6 +327,8 @@ namespace SimpleGraph
             closure.Add(node);
             while (lastSize != closure.Count)
             {
+                //Find direct mapping for each node and after find mapping for each founded node.
+                //If size of nodes remains fixed, return found nodes.
                 lastSize = closure.Count;
                 closure.AddRange(DirectMapping(closure));
                 closure = closure.Distinct().ToList();
@@ -335,6 +348,8 @@ namespace SimpleGraph
             closure.Add(node);
             while (lastSize != closure.Count)
             {
+                //Find inverse mapping for each node and after find mapping for each founded node.
+                //If size of nodes remains fixed, return found nodes.
                 lastSize = closure.Count;
                 closure.AddRange(InverseMapping(closure));
                 closure = closure.Distinct().ToList();
@@ -351,6 +366,7 @@ namespace SimpleGraph
             bool[,] mat = new bool[Nodes.Count, Nodes.Count];
             for (int i = 0; i < Nodes.Count; i++)
             {
+                //Find all nodes, that have path from selected node.
                 List<T> accessibleNodes = DirectTransitiveClosure(Nodes[i]);
                 foreach(T node in accessibleNodes)
                 {
@@ -369,6 +385,7 @@ namespace SimpleGraph
             bool[,] mat = new bool[Nodes.Count, Nodes.Count];
             for (int i = 0; i < Nodes.Count; i++)
             {
+                //Find all path that exist to selected node
                 List<T> accessibleNodes = InverseTransitiveClosure(Nodes[i]);
                 foreach (T node in accessibleNodes)
                 {
@@ -387,12 +404,14 @@ namespace SimpleGraph
             //Split graph
             List<Graph<T>> subGraphs = new List<Graph<T>>();
             Graph<T> procGraph = this;
+            //For each node try to find their subgraph
             while(procGraph.Nodes.Count != 0)
             {
                 List<T> dirClosure = DirectTransitiveClosure(procGraph.Nodes[0]);
                 List<T> invClosure = InverseTransitiveClosure(procGraph.Nodes[0]);
 
-                Graph<T> strongSubgraph = new Graph<T>(Intersection(dirClosure, invClosure), this.Edges);
+                //Create strong subgraph, that based on intersection of direct closure and inverse closure, set of edges
+                Graph<T> strongSubgraph = new Graph<T>(Intersection(dirClosure, invClosure), Edges);
                 subGraphs.Add(strongSubgraph);
 
                 procGraph = Difference(procGraph, strongSubgraph);
@@ -402,6 +421,8 @@ namespace SimpleGraph
             List<Link<Graph<T>>> edges = new List<Link<Graph<T>>>();
             foreach(Graph<T> graphPar in subGraphs)
             {
+                //It's really hard for perception
+                //Long story short: find all subgraph, that have at least one sub edge
                 List<Graph<T>> n = subGraphs.FindAll(s => Edges.Exists(e => graphPar.Nodes.Contains(e.Parent) && s.Nodes.Contains(e.Child) && !s.Equals(graphPar)));
                 foreach(Graph<T> graphChild in n)
                 {
