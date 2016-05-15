@@ -31,14 +31,27 @@
         </Style>
     </Window.Resources>
     <Grid>
-        <Button x:Name="SimButton" Content="Simulate" Margin="0,0,96,10" Click="SimButton_Click" HorizontalAlignment="Right" Width="81" Height="21" VerticalAlignment="Bottom" IsEnabled="False"/>
-        <Button x:Name="SepButton" Content="Separate" Margin="0,0,182,10" Click="SepButton_Click" HorizontalAlignment="Right" Width="81" Height="21" VerticalAlignment="Bottom" IsEnabled="False"/>
-        <Button x:Name="AddButton" Content="Add nodes" Margin="0,0,10,10" Click="AddButton_Click" HorizontalAlignment="Right" Width="81" Height="21" VerticalAlignment="Bottom"/>
+        <Button x:Name="SimButton" Content="Spread graph" Margin="0,0,96,10" Click="SimButton_Click" HorizontalAlignment="Right" Width="81" Height="21" VerticalAlignment="Bottom" IsEnabled="False"/>
+        <Button x:Name="SepButton" Content="Malgrange partition" Margin="0,0,182,10" Click="SepButton_Click" HorizontalAlignment="Right" Width="133" Height="21" VerticalAlignment="Bottom" IsEnabled="False"/>
+        <Button x:Name="AddButton" Content="Edit graph" Margin="0,0,10,10" Click="AddButton_Click" HorizontalAlignment="Right" Width="81" Height="21" VerticalAlignment="Bottom"/>
         <Canvas x:Name="DrawSurface" Margin="0,45,0,36" MouseLeftButtonDown="DrawSurface_MouseLeftButtonDown">
             <Canvas.Background>
                 <SolidColorBrush Color="White" Opacity="0"/>
             </Canvas.Background>
         </Canvas>
-        <Label x:Name="label" Content="Add some nodes, make connections, simulate and enjoy!" Margin="10,10,10,0" VerticalAlignment="Top" FontFamily="Segoe UI Light" FontSize="14"/>
+        <Label x:Name="label" Content="Add some nodes, make connections, simulate and enjoy!" Margin="10,10,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Light" FontSize="14" HorizontalAlignment="Left" Width="343"/>
+        <Label x:Name="help" Content="Help me!" Margin="372,10,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Light" FontSize="14" HorizontalAlignment="Left" Width="135" MouseLeftButtonUp="help_MouseLeftButtonUp" Cursor="Hand">
+            <Label.Style>
+                <Style TargetType="{x:Type Label}">
+                    <Setter Property="Foreground" Value="DarkGreen" />
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Foreground" Value="DarkRed"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Label.Style>
+        </Label>
+        <Button x:Name="ImpGraph" Content="Import Graph" Margin="10,0,0,10" Click="ImportGraph_Click" Height="21" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="133"/>
     </Grid>
 </Window>

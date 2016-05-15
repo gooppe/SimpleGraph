@@ -1,0 +1,12 @@
+﻿<Window x:Class="SimpleGraphRepresentation.Help"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SimpleGraphRepresentation"
+        mc:Ignorable="d"
+        Title="Help" Height="463.076" Width="444.286" ResizeMode="NoResize">
+    <Grid>
+        <TextBlock Margin="10" FontFamily="Segoe UI Light" TextWrapping="WrapWithOverflow" TextTrimming="WordEllipsis" FontSize="14"><Run Text="Для создания графа войдите в режим редактирования, нажав на кнопку "/><Run Background="#FFC6DAE2" Text="Create graph"/><Run Text=". После чего на пустом поле левой кнопкой мыши добавляйте узлы графа. Выбра"/><Run Text="в"/><Run Text=" добавленный узел, появится возможность указать связь."/><LineBreak/><Run/><LineBreak/><Run Text="После того как нужный граф был создан, отключите режим редактирования, "/><Run Text="повторно"/><Run Text=" нажав кнопку "/><Run Background="#FFC6DAE2" Text="Edit graph"/><Run Text=". Используйте кнопку "/><Run Background="#FFC6DAE2" Text="Spread graph"/><Run Text=", для того чтобы 'расправить' граф на поле. Кнопка "/><Run Background="#FFC6DAE2" Text="Malgrange partition "/><Run Text="разбивает граф на сильно"/><Run Text=" "/><Run Text="связные подграфы, выделяя отдельным цветом каждый подграф."/><LineBreak/><Run/><LineBreak/><Run Text="Альтернативный способ задания графа: использование файла с матриц"/><Run Text="е"/><Run Text="й смежности графа. Допускается использование числовых значений для задания путией между вершинами."/><Run Text=" Для добавления файла используете кнопку "/><Run Background="#FFC6DAE2" Text="Import Graph"/><LineBreak/><Run/><LineBreak/><Run Background="#FFDEDEDE" FontSize="12" Text="graph.txt"/><LineBreak/><Run Background="#FFDEDEDE" FontSize="12"/><LineBreak/><Run Background="#FFDEDEDE" FontSize="12" Text="0 1 0 0"/><LineBreak/><Run Background="#FFDEDEDE" FontSize="12" Text="1 0 0 0"/><LineBreak/><Run Background="#FFDEDEDE" FontSize="12" Text="0 0 1 0"/><LineBreak/><Run Background="#FFDEDEDE" FontSize="12" Text="0 1 0 0"/></TextBlock>
+    </Grid>
+</Window>

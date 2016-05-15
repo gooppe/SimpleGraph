@@ -1,0 +1,19 @@
+﻿<Window x:Class="SimpleGraphRepresentation.Info"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SimpleGraphRepresentation"
+        mc:Ignorable="d"
+        Title="Results of partion:" Height="261" Width="381">
+    <Grid>
+        <ScrollViewer>
+            <StackPanel>
+                <Label Content="Strongly connected vertices:" FontFamily="Segoe UI Light" FontSize="14" HorizontalContentAlignment="Center"/>
+                <TextBlock x:Name="_Vertices" Text="" TextWrapping="WrapWithOverflow" Padding="5" FontFamily="Segoe UI Light"/>
+                <Label Content="Condenstation links:" FontSize="14" FontFamily="Segoe UI Light" HorizontalContentAlignment="Center"/>
+                <TextBlock x:Name="_Condensations" Text="" TextWrapping="WrapWithOverflow" Padding="5" FontFamily="Segoe UI Light"/>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>

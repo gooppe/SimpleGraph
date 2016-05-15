@@ -16,6 +16,8 @@ using System.Timers;
 using SimpleGraph;
 using SimpleGraphRepresentation.Sources;
 using System.Reflection;
+using System.IO;
+using Microsoft.Win32;
 
 namespace SimpleGraphRepresentation
 {
@@ -37,6 +39,74 @@ namespace SimpleGraphRepresentation
         public MainWindow()
         {
             InitializeComponent();
+
+        }
+
+        public void ImportGraph(string fileName)
+        {
+            StreamReader reader = new StreamReader(fileName);
+            List<string> lines = new List<string>();
+            string line;
+            string errorParMsg = "Bad file format. It should be logical adjacent matrix.";
+            
+            while ((line = reader.ReadLine()) != null)
+            {
+                lines.Add(line);
+            }
+
+            bool[,] mat = new bool[lines.Count, lines.Count];
+
+            int i = 0;
+            foreach(string ln in lines)
+            {
+                string[] items = ln.Split(' ');
+                if (items.Length != lines.Count)
+                {
+                    MessageBox.Show(errorParMsg, "File parsing error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    reader.Close();
+                    return;
+                }
+                int j = 0;
+                foreach (string item in items)
+                {
+                    try
+                    {
+                        mat[i, j] = Convert.ToBoolean(int.Parse(item));
+                    }
+                    catch
+                    {
+                        MessageBox.Show(errorParMsg, "File parsing error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        reader.Close();
+                        return;
+                    }
+                    j++;
+                }
+                i++;
+            }
+
+            for (int x = 0; x < mat.GetLength(0); x++)
+                CreateVertex(new Point(Randomizer.Next(0, (int)DrawSurface.ActualWidth), Randomizer.Next(0, (int)DrawSurface.ActualHeight)));
+
+            for (int x = 0; x < mat.GetLength(0); x++)
+            {
+                for (int y = 0; y < mat.GetLength(0); y++)
+                {
+                    if (y == x)
+                        continue;
+                    if (mat[x, y])
+                        CreateEdge(Vertexes[x], Vertexes[y]);
+                }
+            }
+
+            DrawGraphics();
+            SimButton_Click(null, null);
+            if (AddEnabled)
+                AddButton_Click(null, null);
+            else
+            {
+                SepButton.IsEnabled = true;
+                SimButton.IsEnabled = true;
+            }
 
         }
 
@@ -178,8 +248,8 @@ namespace SimpleGraphRepresentation
                         continue;
                     u = Vertexes[j];
                     double distance = (v.Position.X - u.Position.X) * (v.Position.X - u.Position.X) + (v.Position.Y - u.Position.Y) * (v.Position.Y - u.Position.Y);
-                    v.NetForce.X += 100 * (v.Position.X - u.Position.X) / distance;
-                    v.NetForce.Y += 100 * (v.Position.Y - u.Position.Y) / distance;
+                    v.NetForce.X += 250 * (v.Position.X - u.Position.X) / distance;
+                    v.NetForce.Y += 250 * (v.Position.Y - u.Position.Y) / distance;
                 }
                 for (int j = 0; j < Vertexes.Count; j++)
                 {
@@ -214,6 +284,8 @@ namespace SimpleGraphRepresentation
         private void SepButton_Click(object sender, RoutedEventArgs e)
         {
             Graph<Graph<int>> part = _Graph.MalgrangePartion();
+            Info inf = new Info(part);
+            inf.Show();
             foreach(Graph<int> node in part.Nodes)
             {
                 Brush result = Brushes.Transparent;
@@ -228,7 +300,7 @@ namespace SimpleGraphRepresentation
 
         private void SimButton_Click(object sender, RoutedEventArgs e)
         {
-            timer = new Timer(1);
+            timer = new Timer(10);
             timer.AutoReset = true;
             timer.Elapsed += Timer_Elapsed;
             timer.Enabled = true;
@@ -263,6 +335,39 @@ namespace SimpleGraphRepresentation
             }
             Point pos = new Point(Mouse.GetPosition(DrawSurface).X - 8, Mouse.GetPosition(DrawSurface).Y - 8);
             CreateVertex(pos);
+        }
+
+        private void help_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            Help helpw = new Help();
+            helpw.Show();
+        }
+
+        private void ImportGraph_Click(object sender, RoutedEventArgs e)
+        {
+            if (Vertexes.Count > 0)
+            {
+                if (MessageBox.Show("Previous graph will be deleted. Continue?", "Info", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                {
+                    Vertexes.Clear();
+                    DrawSurface.Children.Clear();
+                    Edges.Clear();
+                    _Graph = new Graph<int>();
+                    timer.Stop();
+                }
+                else
+                {
+                    return;
+                }
+            }
+
+            OpenFileDialog fDiag = new OpenFileDialog();
+            bool? result = fDiag.ShowDialog();
+            if (result == true)
+            {
+                ImportGraph(fDiag.FileName);
+            }
+            
         }
     }
 }
