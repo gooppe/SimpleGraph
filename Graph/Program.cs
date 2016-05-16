@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -92,7 +93,12 @@ namespace SimpleGraph
 
         static void Separate(Graph<int> graph)
         {
-            PrintPartion(graph.MalgrangePartion());
+            Stopwatch swatch = new Stopwatch();
+            swatch.Start();
+            Graph<Graph<int>> part = graph.MalgrangePartion();
+            swatch.Stop();
+            Console.Write("\r\nElapsed time: " + swatch.Elapsed + "\r\n\n");
+            PrintPartion(part);
             Console.WriteLine();
         }
 
